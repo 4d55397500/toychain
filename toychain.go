@@ -9,11 +9,13 @@ import (
 	"fmt"
 )
 
-const BLOCKCHAIN_SIZE = 1000
+const BLOCKCHAIN_SIZE = 4
+
 
 type BlockChain []Block
 
 func (bc BlockChain) VerifyChain() {
+	println(fmt.Sprintf("Verifying chain..."))
 	var previousHash []byte
 	var nerrors = 0
 	for i, b := range bc {
@@ -21,6 +23,8 @@ func (bc BlockChain) VerifyChain() {
 			if bytes.Compare(previousHash, b.PreviousHashValue) != 0 {
 				println(fmt.Sprintf("Verification failed on node %v", i))
 				nerrors += 1
+			} else {
+				println(fmt.Sprintf("Verification passed on node %v", i))
 			}
 		}
 		previousHash = b.ComputeHash()
@@ -34,6 +38,7 @@ func (bc BlockChain) AddBlock(b Block) BlockChain {
 		pb := bc[len(bc)-1]
 		b.PreviousHashValue = pb.HashValue
 		b.HashValue = b.ComputeHash()
+		println(fmt.Sprintf("Added block %v", b))
 	}
 	return append(bc, b)
 }
@@ -79,6 +84,7 @@ func main() {
 	bc := make(BlockChain, 0)
 	for i := 0; i < BLOCKCHAIN_SIZE; i++ {
 		bc = bc.AddBlock(DummyBlock())
+		time.Sleep(time.Second)
 	}
 	bc.VerifyChain()
 }
